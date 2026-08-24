@@ -29,10 +29,10 @@ This docs-local page wraps the generated catalog from the MCP repository so RAG 
 | User intent | Prefer these MCP tools | Safety class |
 |-------------|------------------------|--------------|
 | Market list, APY, TVL, utilization | `get_supported_markets`, `get_market_data`, `get_all_markets` | Read-only |
-| Wallet and account risk | `get_wallet_address`, `get_account_summary`, `get_balances` | Read-only / wallet read |
+| Wallet and account risk | `get_wallet_address`, `get_account_summary`, `get_wallet_balances` | Read-only / wallet read |
 | Supply, borrow, repay, withdraw | `supply`, `borrow`, `repay`, `withdraw`, `withdraw_all`, `estimate_lending_energy` | Writes require HITL |
 | sTRX staking | `get_strx_dashboard`, `get_strx_account`, `stake_trx_to_strx`, `unstake_strx`, `claim_strx_rewards` | Writes require HITL |
-| Energy rental / direct purchase | `get_energy_rental_dashboard`, `rent_energy`, `get_energy_purchase_config`, `quote_energy_purchase`, `get_energy_payment_risk`, `buy_energy_direct` | Writes require HITL; direct purchase is quote-bound |
+| Energy rental / direct purchase | `get_energy_rental_dashboard`, `rent_energy`, `get_energy_purchase_config`, `quote_energy_purchase`, `get_energy_purchase_history`, `get_energy_payment_risk`, `buy_energy_direct` | Writes require HITL; direct purchase is quote-bound |
 
 Chinese query aliases: “查询市场/APY/TVL” maps to market read tools; “查看我的仓位/健康度” maps to account summary; “帮我存款/借款/还款/赎回/质押/租能量/买能量” maps to write tools and must require explicit confirmation.
 
@@ -44,7 +44,7 @@ Chinese query aliases: “查询市场/APY/TVL” maps to market read tools; “
 >
 > Lets an AI agent plan tool routing offline without connecting to the server. Side-effect classes align with the AI-Agent documentation standard baseline (Safe / Network Read / Remote Write / Destructive).
 
-**Total tools**: 103  |  **Protocol**: MCP  |  **Transport**: stdio / HTTP(SSE)
+**Total tools**: 104  |  **Protocol**: MCP  |  **Transport**: stdio / HTTP(SSE)
 
 ## Common structured output contract (v1.0.0)
 
@@ -60,7 +60,7 @@ Every tool declares an MCP `outputSchema`. Successful calls preserve the legacy 
 
 Consume `structuredContent` when available; older clients may continue parsing the first text content item. Error results keep `isError: true` and the existing structured JSON error body.
 
-**Read-only tools**: 62  |  **Write tools**: 41 (of which marked destructive: 28)
+**Read-only tools**: 63  |  **Write tools**: 41 (of which marked destructive: 28)
 
 > ⚠️ Tools marked 🔴 **sign and broadcast TRON transactions that move real assets** — the client MUST require human confirmation (HITL) before executing. 🟡 tools only change local wallet/network config or start an interaction. Private keys are managed encrypted by `@bankofai/agent-wallet` and are **never passed as tool arguments**. The legacy unauthenticated browser-wallet bridge is disabled.
 
@@ -621,14 +621,14 @@ Consume `structuredContent` when available; older clients may continue parsing t
 | `proposalId` | number | ✅ |  | The proposal ID to withdraw votes from |
 | `network` | string | — |  | Network. Default: mainnet |
 
-## Energy Rental (14)
+## Energy Rental (15)
 
 ### `get_energy_purchase_config`
 
 **Energy Purchase Config**
 - **Side effect**: 🟢 Read-only (Safe / Network Read)
 - **annotations**: idempotent: true · openWorld: true
-- **Description**: Get live energy direct-purchase limits, supported durations, current unit prices, and pool capacity. Requires JUSTLEND_ENERGY_API_URL; there is intentionally no production URL or economic fallback.
+- **Description**: Get live energy direct-purchase limits, supported durations, current unit prices, and pool capacity. Uses the official JustLend production API by default; JUSTLEND_ENERGY_API_URL overrides it.
 - **Output schema**: common structured envelope v1.0.0 (`schemaVersion`, `tool`, `result`)
 - **Params**: none
 
@@ -658,6 +658,20 @@ Consume `structuredContent` when available; older clients may continue parsing t
 |-------|------|:--------:|---------|-------------|
 | `orderId` | union | ✅ |  | Energy purchase order id |
 | `orderToken` | string (min len 1) | — |  | Optional X-Consumer-Order-Token returned when the order was accepted |
+
+### `get_energy_purchase_history`
+
+**Energy Purchase History**
+- **Side effect**: 🟢 Read-only (Safe / Network Read)
+- **annotations**: idempotent: true · openWorld: true
+- **Description**: Get public direct-purchase history for a payer address, including in-progress and settled orders. Use it to recover an accepted order when an idempotent retry returns no access token.
+- **Output schema**: common structured envelope v1.0.0 (`schemaVersion`, `tool`, `result`)
+
+| Param | Type | Required | Default | Description |
+|-------|------|:--------:|---------|-------------|
+| `address` | string (pattern /^T[1-9A-HJ-NP-Za-km-z]{33}$/) | — |  | Payer address. Default: configured wallet |
+| `page` | number (min 0) | — |  | History page (1-based; used with size) |
+| `size` | number (min 0) | — |  | Rows per page; omit for the backend default/all-history view |
 
 ### `get_energy_payment_risk`
 

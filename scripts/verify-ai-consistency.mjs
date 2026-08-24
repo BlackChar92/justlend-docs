@@ -66,9 +66,9 @@ const requiredSnippets = {
   'docs/index.md': ['18 active + 6 legacy = 24', 'justlend-cli', 'justlend-utils-v2'],
   'docs/getting_started/overview.md': ['18 active + 6 legacy = 24'],
   'docs/developers/contracts_overview.md': ['18 active + 6 legacy = 24', 'per market, 23 instances'],
-  'docs/ai_support/mcp_server.md': ['v1.1.3', '24 jToken markets in total', '| jU', '`outputSchema`', '`structuredContent`'],
+  'docs/ai_support/mcp_server.md': ['v1.1.3', '104 tools', '24 jToken markets in total', '| jU', '`outputSchema`', '`structuredContent`', 'get_energy_purchase_history', 'https://tegrow.ablesdxd.link', 'exact signed request'],
   'docs/ai_support/justlend_skills.md': ['`1.1.1`', '6 structured skill modules', 'justlend-energy-purchase', '8 static shortcuts', '`structuredContent`', '`rate_limit`'],
-  'docs/ai_support/cli_and_sdk.md': ['justlend/justlend-cli', '`1.0.1`', 'schemas/output-v1.schema.json', 'justlend/justlend-utils-v2', '--dry-run'],
+  'docs/ai_support/cli_and_sdk.md': ['justlend/justlend-cli', '`1.0.1`', '30 top-level command groups', 'energy purchase history <payer>', 'schemas/output-v1.schema.json', 'justlend/justlend-utils-v2', '--dry-run'],
   'docs/llms.txt': ['justlend-cli', 'v1.1.3', 'v1.1.1', 'justlend-utils-v2', '/lend/account?addresses={address}'],
   'docs/llms-full.txt': ['JustLend CLI — deterministic terminal automation', 'v1.0.1', 'v1.1.3', 'v1.1.1', 'JustLend V2 Utils'],
   'docs/documents/aidocs/source_of_truth.md': ['JustLend CLI', 'JustLend V2 Utils'],
@@ -94,12 +94,17 @@ check(
   'MCP catalog must identify upstream version 1.1.3',
 );
 check(
-  (mcpCatalog.match(/^### `[^`]+`$/gm) ?? []).length === 103,
-  'MCP catalog must contain exactly 103 generated tool headings',
+  (mcpCatalog.match(/^### `[^`]+`$/gm) ?? []).length === 104,
+  'MCP catalog must contain exactly 104 generated tool headings',
 );
 check(
-  (mcpCatalog.match(/^- \*\*Output schema\*\*:/gm) ?? []).length === 103,
-  'MCP catalog must document output schema coverage for all 103 tools',
+  (mcpCatalog.match(/^- \*\*Output schema\*\*:/gm) ?? []).length === 104,
+  'MCP catalog must document output schema coverage for all 104 tools',
+);
+check(mcpCatalog.includes('### `get_energy_purchase_history`'), 'MCP catalog must expose public energy purchase history');
+check(
+  mcpCatalog.includes('Uses the official JustLend production API by default'),
+  'MCP catalog must document the official production API default',
 );
 
 const hook = await read('hooks/copy_dotfiles.py');

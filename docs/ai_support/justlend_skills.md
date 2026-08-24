@@ -253,10 +253,10 @@ Rent TRON Energy from the JustLend marketplace at 50-80% lower cost than burning
 
 ### Energy Direct Purchase (justlend-energy-purchase)
 
-Obtain an authoritative quote, confirm the exact `total_sun` payment, submit it for backend-controlled broadcast, track the order, and reconcile ambiguous payment results before initiating another purchase.
+Obtain an authoritative quote, confirm the exact `total_sun` payment, submit it for backend-controlled broadcast, track token-bearing orders, recover tokenless results through public payer history, and reconcile ambiguous payment results before initiating another purchase.
 
 !!! warning
-    This skill requires the [full MCP server](mcp_server.md), an explicitly configured energy API URL, and a signing wallet. Never expose a private key or signed transaction, and never retry with a second payment while payment risk is unresolved.
+    This skill requires the [full MCP server](mcp_server.md) and a signing wallet. Mainnet uses the official `https://tegrow.ablesdxd.link` endpoint by default; a custom/test or non-mainnet service must be configured explicitly. Never expose a private key or signed transaction in tool output. The full server may retain the exact signed request in a local mode-`0600` recovery file after an ambiguous submission; never retry with a second payment while payment risk is unresolved.
 
 ### DAO Governance (justlend-governance-v1)
 

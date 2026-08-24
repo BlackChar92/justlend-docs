@@ -43,7 +43,7 @@ V2 **vaults** are ERC4626 tokenized vaults that aggregate supply-side liquidity 
 
 ### Liquidation
 
-When a borrower's risk reaches the market `lltv`, anyone may liquidate through the **PublicLiquidatorProxy**: repay part of the debt (in the loan token) and seize the corresponding collateral at a discount. See `get_moolah_pending_liquidations` / `get_moolah_liquidation_quote` / `moolah_liquidate` in the [MCP server tool catalog](../ai_support/mcp_server.md#tools-103-total).
+When a borrower's risk reaches the market `lltv`, anyone may liquidate through the **PublicLiquidatorProxy**: repay part of the debt (in the loan token) and seize the corresponding collateral at a discount. See `get_moolah_pending_liquidations` / `get_moolah_liquidation_quote` / `moolah_liquidate` in the [MCP server tool catalog](../ai_support/mcp_server.md#tools-104-total).
 
 ### Native TRX
 
@@ -88,7 +88,7 @@ Addresses are the source-of-truth deployment config tracked in the MCP server's 
 
 ## Using V2 via the MCP server
 
-The [JustLend MCP Server](../ai_support/mcp_server.md) (current: v1.1.3) exposes the full V2 surface under `moolah_*` / `get_moolah_*` tools — vaults, markets, liquidation, dashboard/history, and mining — plus four guided prompts (`moolah_supply`, `moolah_borrow`, `moolah_liquidate`, `moolah_portfolio`). See the [V2 tool groups](../ai_support/mcp_server.md#tools-103-total) and the [MCP Tool Catalog](../documents/aidocs/mcp_tools.md).
+The [JustLend MCP Server](../ai_support/mcp_server.md) (current: v1.1.3) exposes the full V2 surface under `moolah_*` / `get_moolah_*` tools — vaults, markets, liquidation, dashboard/history, and mining — plus four guided prompts (`moolah_supply`, `moolah_borrow`, `moolah_liquidate`, `moolah_portfolio`). See the [V2 tool groups](../ai_support/mcp_server.md#tools-104-total) and the [MCP Tool Catalog](../documents/aidocs/mcp_tools.md).
 
 Contract ABIs (`MOOLAH_CORE_ABI`, `TRX_PROVIDER_ABI`, `MOOLAH_VAULT_ABI`, `PUBLIC_LIQUIDATOR_ABI`) are bundled in the MCP repo's [`src/core/abis.ts`](https://github.com/justlend/mcp-server-justlend/blob/main/src/core/abis.ts). For the full on-chain ABIs and contract data structures (`Position`, `MarketParams`, `MarketConfig`, `MarketAllocation`, …), see the [SBM V2 contract reference](supply_and_borrow_market/sbmV2.md).
 

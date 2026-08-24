@@ -60,15 +60,15 @@
 - [MCP Safety Policy](https://docs.justlend.org/documents/aidocs/mcp_safety): Read-only vs write tools, wallet modes, private-key handling, and HITL confirmation.
 - [Common Questions](https://docs.justlend.org/documents/aidocs/common_questions): English and Chinese user questions mapped to tools and API sources.
 - [AI Glossary](https://docs.justlend.org/documents/aidocs/glossary): Compact definitions for JustLend / Compound V2 terms.
-- [MCP Tool Catalog](https://docs.justlend.org/documents/aidocs/mcp_tools): Full generated catalog of all 103 MCP tools with schemas and safety annotations.
+- [MCP Tool Catalog](https://docs.justlend.org/documents/aidocs/mcp_tools): Full generated catalog of all 104 MCP tools with schemas and safety annotations.
 
 ## AI Agent integration
 
 - [AI / LLMs](https://docs.justlend.org/ai_support/ai_llms): Human-readable directory for `llms.txt`, `llms-full.txt`, OpenAPI, contract JSON, and ABI JSON endpoints.
 - [JustLend Skills](https://docs.justlend.org/ai_support/justlend_skills) (v1.1.1): GitHub-distributed workflow skills project (**6 modules**) plus a bundled read-only MCP server (**9 query tools**) with versioned `outputSchema`, `structuredContent`, and machine-readable retry errors. Write workflows route to the full MCP server and require confirmation. Clone <https://github.com/justlend/justlend-skills> and run `bash install.sh`; the local identifier `@justlend/justlend-skills` is **not published to npm**.
 - [CLI and V2 SDK integration guide](https://docs.justlend.org/ai_support/cli_and_sdk): Choose terminal/CI automation or embedded application integration; includes installation, version, output contract, signing, and broadcast safety rules.
-- [Full MCP Server](https://docs.justlend.org/ai_support/mcp_server) (`@justlend/mcp-server-justlend`, v1.1.3, **103 tools**): Full read/write MCP server for JustLend V1 and V2, including quote-bound energy direct purchase with payer-scoped recovery. Every tool declares `outputSchema`; successful calls expose `{schemaVersion, tool, result}` in `structuredContent` while preserving legacy text. Writes use encrypted agent-wallet; the legacy unauthenticated browser bridge is disabled. Source: <https://github.com/justlend/mcp-server-justlend>.
-- [MCP machine-readable tool catalog](https://github.com/justlend/mcp-server-justlend/blob/main/mcp-api-list.md) (`mcp-api-list.md`): Offline-loadable list of all 103 tools with input/output schemas, side-effect class (read-only vs on-chain write/destructive), and HITL guidance. Generated from source, so it never drifts from the tool definitions.
+- [Full MCP Server](https://docs.justlend.org/ai_support/mcp_server) (`@justlend/mcp-server-justlend`, v1.1.3, **104 tools**): Full read/write MCP server for JustLend V1 and V2, including quote-bound energy direct purchase with public payer-history and payer-scoped recovery. Every tool declares `outputSchema`; successful calls expose `{schemaVersion, tool, result}` in `structuredContent` while preserving legacy text. Writes use encrypted agent-wallet; the legacy unauthenticated browser bridge is disabled. Source: <https://github.com/justlend/mcp-server-justlend>.
+- [MCP machine-readable tool catalog](https://github.com/justlend/mcp-server-justlend/blob/main/mcp-api-list.md) (`mcp-api-list.md`): Offline-loadable list of all 104 tools with input/output schemas, side-effect class (read-only vs on-chain write/destructive), and HITL guidance. Generated from source, so it never drifts from the tool definitions.
 - [MCP source ABIs and network config](https://github.com/justlend/mcp-server-justlend): Upstream TypeScript definitions used to generate the docs JSON ABI and address files.
 
 ## API endpoints (read-only HTTP API)

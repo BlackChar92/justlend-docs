@@ -32,7 +32,7 @@ npm link
 justlend --help
 ```
 
-The CLI exposes 31 top-level command groups covering V1 and V2 lending, vaults, account positions, liquidation, sTRX and stUSDT staking, WTRX, energy rental, governance, mining, rewards, history, portfolio analysis, and transaction simulation.
+The CLI exposes 30 top-level command groups covering V1 and V2 lending, vaults, account positions, liquidation, sTRX and stUSDT staking, WTRX, energy rental, governance, mining, rewards, history, portfolio analysis, and transaction simulation.
 
 ### Agent contract
 
@@ -43,6 +43,8 @@ The CLI exposes 31 top-level command groups covering V1 and V2 lending, vaults, 
 - Use `--dry-run --dry-run-owner <address>` first. Dry-run simulates and never signs or broadcasts.
 - Use `--no-broadcast` for sign-only validation, then broadcast only after explicit human intent.
 - Energy direct purchase is the exception: it rejects `--no-broadcast` because the configured backend controls broadcast. Use `energy purchase quote` or `--dry-run` before the explicitly confirmed purchase instead.
+- Mainnet energy purchase uses the official `https://tegrow.ablesdxd.link` service by default. Nile requires an explicit matching custom `--energy-api-url`; the CLI rejects the production service on non-mainnet, including `buy --dry-run`.
+- Use `energy purchase history <payer>` to recover public in-progress/settled orders. An ambiguous result may retain the exact signed request in the local mode-`0600` risk file; it is redacted from output and blocks another payment until history reconciliation clears it.
 - In non-interactive or JSON mode, writes require `--yes`; that flag bypasses the local prompt and must not be added automatically.
 - Prefer `--network nile` for integration tests. Mainnet writes are irreversible.
 
@@ -87,7 +89,7 @@ tronObj.network = 'nile';
 3. Inspect whether a helper is read-only or creates a transaction before calling it. `depositToVault`, `supplyCollateral`, `borrow`, `repay`, `liquidate`, `multiClaim`, and energy `purchase()` are write paths.
 4. Keep private keys, signed transactions, and wallet session material out of prompts, logs, and tool output.
 5. Use Nile and a non-production wallet for tests. Require explicit human confirmation immediately before a Mainnet signature or broadcast.
-6. For energy purchases, supply the API URL and durable payment-risk storage explicitly; never fabricate pricing or payment-address fallbacks.
+6. For energy purchases, use the official service only on mainnet, configure a matching service on non-mainnet, and preserve durable payment-risk state; never fabricate pricing or payment-address fallbacks.
 
 ## Which integration surface should an agent choose?
 

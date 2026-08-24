@@ -1,6 +1,6 @@
 ---
 title: JustLend MCP Server (full, read + write)
-description: "@justlend/mcp-server-justlend v1.1.3 — 103 MCP tools with versioned output schemas across JustLend V1 and V2, secure energy direct purchase, historical records, general TRON utilities, and encrypted agent-wallet signing."
+description: "@justlend/mcp-server-justlend v1.1.3 — 104 MCP tools with versioned output schemas across JustLend V1 and V2, secure energy direct purchase, historical records, general TRON utilities, and encrypted agent-wallet signing."
 ---
 
 # MCP Server
@@ -15,7 +15,7 @@ This page is the human-readable reference for the full MCP server. For agent use
 - [Installation](#installation) — npm, source, and Claude Desktop config.
 - [Wallet setup](#wallet-setup-first-use-choice) — encrypted agent-wallet; the legacy unauthenticated browser bridge is currently disabled.
 - [HTTP-mode authentication (`MCP_API_KEY`)](#http-mode-authentication-mcp_api_key) — stdio (local clients) is open; HTTP/SSE is fail-closed.
-- [Tool catalog (103 tools)](#tools-103-total) — **V1**: Wallet & Network · Market Data · Account & Balances · Lending Operations · Mining & Rewards · JST Voting / Governance · Energy Rental / Direct Purchase · sTRX Staking · Transfers · General TRON. **V2**: Vaults · Markets · Liquidation · Dashboard/History · Mining. Plus Historical Records.
+- [Tool catalog (104 tools)](#tools-104-total) — **V1**: Wallet & Network · Market Data · Account & Balances · Lending Operations · Mining & Rewards · JST Voting / Governance · Energy Rental / Direct Purchase · sTRX Staking · Transfers · General TRON. **V2**: Vaults · Markets · Liquidation · Dashboard/History · Mining. Plus Historical Records.
 - [Guided prompts](#prompts-ai-guided-workflows) — the 14 shipped MCP prompts (`supply_assets`, `analyze_portfolio`, `cast_vote`, `moolah_supply`, `moolah_borrow`, …).
 - [Security considerations](#security-considerations) — `destructiveHint`, dry-run mode, source-of-truth priority, HTTP-mode `MCP_API_KEY`.
 
@@ -33,7 +33,7 @@ Beyond JustLend-specific operations, the server also exposes a full set of **gen
     Current version (**v1.1.3**) covers **JustLend V1** *and* **JustLend V2**. V1 is the Compound-V2-style pooled supply/borrow market (jTokens); V2 is an isolated-market + ERC4626-vault protocol. The two surfaces are namespaced — V1 tools like `get_market_data` / `supply`, V2 tools prefixed `moolah_*` / `get_moolah_*` (the `moolah` identifier is V2's on-chain/tool naming). See the [JustLend V2](../developers/justlend_v2.md) developer page for the protocol model and deployed contracts.
 
 !!! tip "v1.1.3 Update"
-    **v1.1.3** makes every one of the **103 tools** declare an MCP `outputSchema`. Successful calls preserve legacy text content and also expose `{ schemaVersion: "1.0.0", tool, result }` in `structuredContent`, so agents no longer need to infer output shape from prose. It also adds five fail-closed energy direct-purchase tools for configuration, quote, order recovery, payment-risk reconciliation, and explicitly confirmed purchase; reconciles the V1 inventory to **24 markets (18 active + 6 legacy)**; and restores active `jU` to the product table. The legacy unauthenticated browser-wallet bridge is disabled, so writes use encrypted agent-wallet signing. **v1.1.2** added native **TRX ↔ WTRX** wrap/unwrap (`wrap_trx` / `unwrap_trx`), hardened TRC20 approvals, and added `retryable` error classification. **v1.1.0** introduced the V2 tool and prompt surface.
+    **v1.1.3** makes every one of the **104 tools** declare an MCP `outputSchema`. Successful calls preserve legacy text content and also expose `{ schemaVersion: "1.0.0", tool, result }` in `structuredContent`, so agents no longer need to infer output shape from prose. It also adds six fail-closed energy direct-purchase tools for configuration, quote, public payer history, order recovery, payment-risk reconciliation, and explicitly confirmed purchase; reconciles the V1 inventory to **24 markets (18 active + 6 legacy)**; and restores active `jU` to the product table. The legacy unauthenticated browser-wallet bridge is disabled, so writes use encrypted agent-wallet signing. **v1.1.2** added native **TRX ↔ WTRX** wrap/unwrap (`wrap_trx` / `unwrap_trx`), hardened TRC20 approvals, and added `retryable` error classification. **v1.1.0** introduced the V2 tool and prompt surface.
 
 ## Overview
 
@@ -194,13 +194,15 @@ export MCP_CORS_ORIGIN=""          # required allow-list if you bind to a non-lo
 # Required in HTTP mode — see "HTTP Mode Authentication" below for how to generate one
 export MCP_API_KEY="your_strong_random_secret"
 
-# Required only for energy direct purchase; there is no built-in production URL
+# Optional energy direct-purchase override; mainnet defaults to https://tegrow.ablesdxd.link
 export JUSTLEND_ENERGY_API_URL="https://energy-api.example"
-# Temporary/custom endpoints also require this explicit trust opt-in
+# Custom/test endpoints also require this explicit trust opt-in
 export JUSTLEND_ALLOW_UNTRUSTED_HOSTS="1"
 ```
 
-Energy direct purchase is fail-closed: load live limits with `get_energy_purchase_config`, obtain an authoritative `quote_energy_purchase`, show the exact payer/receivers/duration/TRX amount, and call `buy_energy_direct` with `confirmPayment=true` only after explicit confirmation. If submission is ambiguous, call `get_energy_payment_risk`; never sign a second payment while the first is unresolved.
+Energy direct purchase is fail-closed: mainnet uses the official `https://tegrow.ablesdxd.link` service by default, while a non-mainnet signer requires a matching custom service. Load live limits with `get_energy_purchase_config`, obtain an authoritative `quote_energy_purchase`, show the exact payer/receivers/duration/TRX amount, and call `buy_energy_direct` with `confirmPayment=true` only after explicit confirmation. If submission is ambiguous or an idempotent response has no order token, query `get_energy_purchase_history` and then `get_energy_payment_risk`; never sign a second payment while the risk list is non-empty.
+
+After signing, an ambiguous result may store the exact signed request (signature plus raw transaction) in the local mode-`0600` `~/.mcp-server-justlend/energy-payment-risks.json` recovery file. The request remains broadcastable until expiry, is redacted from MCP output, and is removed only after public history confirms the payment/order or the backend deterministically rejects it before broadcast.
 
 ### HTTP Mode Authentication (`MCP_API_KEY`)
 
@@ -372,7 +374,7 @@ npm run dev
 
 ## API Reference
 
-### Tools (103 total)
+### Tools (104 total)
 
 !!! info "V1 + V2"
     The first ten groups below are **JustLend V1** (pooled jToken market). The **JustLend V2** groups (vaults / markets / liquidation / dashboard / mining) and **Historical Records** follow. V2 tools are namespaced `moolah_*` / `get_moolah_*`.
@@ -463,7 +465,8 @@ npm run dev
 | `return_energy_rental` | Cancel an active rental (with active order check) | **Yes** |
 | `get_energy_purchase_config` | Load live direct-purchase limits, durations, prices, and pool capacity | No |
 | `quote_energy_purchase` | Obtain an authoritative quote without creating or paying for an order | No |
-| `get_energy_purchase_order` | Recover an order by order ID or payment transaction ID | No |
+| `get_energy_purchase_order` | Query an order lifecycle by order ID, with an optional access token | No |
+| `get_energy_purchase_history` | Query public in-progress and settled orders by payer address | No |
 | `get_energy_payment_risk` | Reconcile unresolved payer-scoped payment risks before another purchase | No |
 | `buy_energy_direct` | Sign a quote-bound TRX payment after `confirmPayment=true`; configured backend validates and may broadcast | **Yes** |
 
@@ -673,7 +676,7 @@ Only `transient` is safe to auto-retry; every other code requires a corrective a
 → AI calls `get_energy_rent_info` to verify active rental → calls `return_energy_rental` → confirms refund
 
 **"Buy energy directly for these receiver addresses"**
-→ AI calls `get_energy_purchase_config` → obtains `quote_energy_purchase` → shows payer, receivers, duration, and exact TRX amount → calls `buy_energy_direct` only after explicit confirmation → verifies with `get_energy_purchase_order`; ambiguous results route through `get_energy_payment_risk` before any retry
+→ AI calls `get_energy_purchase_config` → obtains `quote_energy_purchase` → shows payer, receivers, duration, and exact TRX amount → calls `buy_energy_direct` only after explicit confirmation → verifies token-bearing results with `get_energy_purchase_order`; tokenless/ambiguous results route through `get_energy_purchase_history` and `get_energy_payment_risk` before any retry
 
 **"Stake 1000 TRX to earn sTRX rewards"**
 → AI uses `stake_trx` prompt: checks balance → checks exchange rate & APY → stakes TRX → verifies sTRX received
