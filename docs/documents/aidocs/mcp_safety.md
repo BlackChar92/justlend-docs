@@ -40,7 +40,7 @@ Before any on-chain write tool, the agent must show:
 
 Then ask for explicit confirmation.
 
-For `buy_energy_direct`, the confirmation must be tied to the authoritative quote: show payer, every receiver, duration, and exact TRX amount. The configured backend validates and may broadcast the signed payment. If the result is ambiguous, call `get_energy_payment_risk` and do not sign a second payment while the first remains unresolved.
+For `buy_energy_direct`, the confirmation must be tied to the authoritative quote: show payer, every receiver, duration, and exact TRX amount. The configured backend validates and may broadcast the signed payment. If the result is ambiguous, query public payer history and call `get_energy_payment_risk` with no arguments. That configured-wallet check is read-only and never replays a stored payment. Do not sign a second payment while the first remains unresolved; any recovery replay must happen only inside a separately confirmed `buy_energy_direct` call.
 
 ## Private key rule
 

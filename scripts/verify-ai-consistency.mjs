@@ -102,6 +102,14 @@ check(
   'MCP catalog must document output schema coverage for all 104 tools',
 );
 check(mcpCatalog.includes('### `get_energy_purchase_history`'), 'MCP catalog must expose public energy purchase history');
+const riskSection = mcpCatalog.match(/### `get_energy_payment_risk`[\s\S]*?(?=\n### `)/)?.[0] ?? '';
+check(
+  riskSection.includes('for the configured wallet without replaying a signed payment') &&
+    riskSection.includes('**Params**: none') &&
+    !riskSection.includes('| `address` |') &&
+    !riskSection.includes('| `network` |'),
+  'MCP payment-risk docs must be no-argument, configured-wallet-only, and read-only',
+);
 check(
   mcpCatalog.includes('Uses the official JustLend production API by default'),
   'MCP catalog must document the official production API default',

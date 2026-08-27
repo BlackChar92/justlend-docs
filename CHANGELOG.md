@@ -23,7 +23,7 @@ For the JustLend protocol itself, see governance proposals on [forum.justlend.or
 - Reconciled the market inventory to **24 total (18 active + 6 legacy)** after expanding `app.justlend.org/marketNew` and cross-checking `/lend/jtoken` plus the MCP chain catalog; added the previously omitted active `jU` market everywhere.
 - Corrected `/lend/account`: `addresses` is optional, omission returns the global account index, and the endpoint-specific default `pageSize` is 50.
 - Added verification provenance and freshness metadata to `contracts.json` and its JSON Schema.
-- Aligned MCP, CLI, and Skills guidance with the official mainnet energy API default, public payer-history recovery, tokenless idempotent orders, exact signed-request persistence, and the CLI's actual 30 top-level command groups.
+- Aligned MCP, CLI, and Skills guidance with the official mainnet energy API default, public payer-history recovery, tokenless idempotent orders, exact signed-request persistence, the configured-wallet/no-argument payment-risk check, and the CLI's actual 30 top-level command groups.
 
 ### Added — 2026-05-22 API-style + reference-gap pass
 

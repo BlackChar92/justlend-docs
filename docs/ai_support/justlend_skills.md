@@ -47,7 +47,7 @@ The project includes 6 structured skill modules in the `/skills` directory that 
 | **justlend-lending-v2** | JustLend V2 (Moolah) isolated markets + ERC4626 vaults: supply/borrow/liquidate | Full MCP Server |
 | **justlend-trx-staking** | Stake TRX for sTRX liquid staking tokens | Full MCP Server |
 | **justlend-energy-rental** | Rent TRON Energy at discounted rates (50-80% cheaper) | Full MCP Server |
-| **justlend-energy-purchase** | Quote, confirm, track, and reconcile direct Energy purchases | Full MCP Server |
+| **justlend-energy-purchase** | Quote, confirm, track, and safely inspect unresolved direct Energy purchases | Full MCP Server |
 | **justlend-governance-v1** | View proposals, deposit JST for voting power, cast votes | Full MCP Server |
 
 The read-only portions of `justlend-lending-v1` work with the built-in 9 query tools. Its write flows and the other five skills require the [full MCP server](mcp_server.md) for tool execution.
@@ -253,10 +253,10 @@ Rent TRON Energy from the JustLend marketplace at 50-80% lower cost than burning
 
 ### Energy Direct Purchase (justlend-energy-purchase)
 
-Obtain an authoritative quote, confirm the exact `total_sun` payment, submit it for backend-controlled broadcast, track token-bearing orders, recover tokenless results through public payer history, and reconcile ambiguous payment results before initiating another purchase.
+Obtain an authoritative quote, confirm the exact `total_sun` payment, submit it for backend-controlled broadcast, track token-bearing orders, recover tokenless results through public payer history, and inspect the configured wallet’s unresolved risk state before initiating another purchase.
 
 !!! warning
-    This skill requires the [full MCP server](mcp_server.md) and a signing wallet. Mainnet uses the official `https://tegrow.ablesdxd.link` endpoint by default; a custom/test or non-mainnet service must be configured explicitly. Never expose a private key or signed transaction in tool output. The full server may retain the exact signed request in a local mode-`0600` recovery file after an ambiguous submission; never retry with a second payment while payment risk is unresolved.
+    This skill requires the [full MCP server](mcp_server.md) and a signing wallet. Mainnet uses the official `https://tegrow.ablesdxd.link` endpoint by default; a custom/test or non-mainnet service must be configured explicitly. Never expose a private key or signed transaction in tool output. The full server may retain the exact signed request in a local mode-`0600` recovery file after an ambiguous submission. The no-argument risk check is read-only and never replays it; never retry with a second payment while payment risk is unresolved.
 
 ### DAO Governance (justlend-governance-v1)
 
