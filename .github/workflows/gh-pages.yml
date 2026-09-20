@@ -1,39 +1,31 @@
-name: Monitor Live API
-
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '17 2 * * 1'  # Monday 02:17 UTC; independent of documentation deployment
-
+# Temporary fork-only diagnostics; never merge.
+name: Diagnose Public API Access (fork only)
+'on':
+  workflow_dispatch: null
 permissions:
   contents: read
-
 jobs:
   live-api:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: '10'
     steps:
     - name: Checkout
       uses: actions/checkout@v7
       with:
-        persist-credentials: false
-
+        persist-credentials: 'false'
     - name: Setup Node.js
       uses: actions/setup-node@v7
       with:
-        node-version: 20
+        node-version: '20'
+    - name: Inspect public API response and DNS
+      run: 'mkdir -p reports
 
-    - name: Run live API agent acceptance
-      run: |
-        mkdir -p reports
-        node scripts/api-acceptance.mjs --json > reports/api-acceptance.json
-        node -e "const r=require('./reports/api-acceptance.json'); if(!r.success||r.passed!==r.total) process.exit(1)"
-
-    - name: Preserve live API report
+        node scripts/diagnose-api-access.mjs | tee reports/access-diagnostics.json'
+    - name: Preserve access diagnostics
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: api-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
-        path: reports/api-acceptance.json
-        retention-days: 14
+        name: access-diagnostics-${{ github.run_id }}
+        path: reports/access-diagnostics.json
+        retention-days: '14'
         if-no-files-found: warn
