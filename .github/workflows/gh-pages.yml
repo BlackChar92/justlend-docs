@@ -1,67 +1,39 @@
-# Temporary fork-only verification; never merge this workflow.
-name: Verify Docs Build (fork only)
-'on':
-  workflow_dispatch: null
+name: Monitor Live API
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * 1'  # Monday 02:17 UTC; independent of documentation deployment
+
+permissions:
+  contents: read
+
 jobs:
-  build:
+  live-api:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
     - name: Checkout
       uses: actions/checkout@v7
       with:
-        persist-credentials: 'false'
-        fetch-depth: '0'
+        persist-credentials: false
+
     - name: Setup Node.js
       uses: actions/setup-node@v7
       with:
-        node-version: '20'
-    - name: Verify AI-readable source consistency
-      run: node scripts/verify-ai-consistency.mjs
-    - name: Test API acceptance output contracts
-      run: node --test scripts/api-acceptance.test.mjs
-    - name: Setup Python
-      uses: actions/setup-python@v7
+        node-version: 20
+
+    - name: Run live API agent acceptance
+      run: |
+        mkdir -p reports
+        node scripts/api-acceptance.mjs --json > reports/api-acceptance.json
+        node -e "const r=require('./reports/api-acceptance.json'); if(!r.success||r.passed!==r.total) process.exit(1)"
+
+    - name: Preserve live API report
+      if: always()
+      uses: actions/upload-artifact@v4
       with:
-        python-version: 3.x
-    - name: Install dependencies
-      run: 'python -m pip install --upgrade pip
-
-        pip install pygments==2.17.2 pymdown-extensions
-
-        pip install mkdocs-exclude
-
-        pip install mkdocs-material==9.6.8
-
-        pip install jieba==0.42.1   # Install dependency
-
-        pip install mkdocs-swagger-ui-tag
-
-        pip install mkdocs-redirects==1.2.2   # legacy hyphenated URLs → current underscore
-        URLs
-
-        pip install mkdocs-git-revision-date-localized-plugin==1.4.7   # per-page
-        last-updated from git history
-
-        '
-    - name: Build the document
-      run: mkdocs build --strict
-    - name: Verify security metadata output
-      run: 'test -f site/.nojekyll
-
-        test -f site/.well-known/security.txt
-
-        cmp docs/.well-known/security.txt site/.well-known/security.txt
-
-        test -f site/ai_support/cli_and_sdk.md
-
-        cmp docs/ai_support/cli_and_sdk.md site/ai_support/cli_and_sdk.md
-
-        grep -q ''type="text/markdown"'' site/ai_support/cli_and_sdk/index.html
-
-        test -f site/developers/apis/agent-acceptance-latest.json
-
-        '
-    - name: Add CNAME file
-      run: echo 'docs.justlend.org' > site/CNAME
-permissions:
-  contents: read
+        name: api-acceptance-${{ github.run_id }}-${{ github.run_attempt }}
+        path: reports/api-acceptance.json
+        retention-days: 14
+        if-no-files-found: warn
