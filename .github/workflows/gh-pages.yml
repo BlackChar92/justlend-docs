@@ -1,69 +1,67 @@
-name: Publish Document
-on:
-  push:
-    branches:
-      - main  # Trigger this workflow whenever the main branch changes
-  pull_request:
-    branches:
-      - main  # Validate AI contracts and strict docs builds before merge
-  workflow_dispatch:    # Allow manual triggering of this workflow via the "Run workflow" button on the GitHub UI Actions tab
+# Temporary fork-only verification; never merge this workflow.
+name: Verify Docs Build (fork only)
+'on':
+  workflow_dispatch: null
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v7  # Action that checks out the repository
+      uses: actions/checkout@v7
       with:
-        persist-credentials: false   # Disable auto-injection of GITHUB_TOKEN so a higher-privilege token can be supplied in later steps
-        fetch-depth: 0   # Required by mkdocs-git-revision-date-localized-plugin to compute per-page last-updated
-
+        persist-credentials: 'false'
+        fetch-depth: '0'
     - name: Setup Node.js
       uses: actions/setup-node@v7
       with:
-        node-version: 20
-
+        node-version: '20'
     - name: Verify AI-readable source consistency
       run: node scripts/verify-ai-consistency.mjs
-
     - name: Test API acceptance output contracts
       run: node --test scripts/api-acceptance.test.mjs
-
     - name: Setup Python
       uses: actions/setup-python@v7
       with:
-        python-version: 3.x   # Install Python
-
+        python-version: 3.x
     - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pygments==2.17.2 pymdown-extensions
-        pip install mkdocs-exclude
-        pip install mkdocs-material==9.6.8
-        pip install jieba==0.42.1   # Install dependency
-        pip install mkdocs-swagger-ui-tag
-        pip install mkdocs-redirects==1.2.2   # legacy hyphenated URLs → current underscore URLs
-        pip install mkdocs-git-revision-date-localized-plugin==1.4.7   # per-page last-updated from git history
+      run: 'python -m pip install --upgrade pip
 
+        pip install pygments==2.17.2 pymdown-extensions
+
+        pip install mkdocs-exclude
+
+        pip install mkdocs-material==9.6.8
+
+        pip install jieba==0.42.1   # Install dependency
+
+        pip install mkdocs-swagger-ui-tag
+
+        pip install mkdocs-redirects==1.2.2   # legacy hyphenated URLs → current underscore
+        URLs
+
+        pip install mkdocs-git-revision-date-localized-plugin==1.4.7   # per-page
+        last-updated from git history
+
+        '
     - name: Build the document
       run: mkdocs build --strict
-
     - name: Verify security metadata output
-      run: |
-        test -f site/.nojekyll
+      run: 'test -f site/.nojekyll
+
         test -f site/.well-known/security.txt
+
         cmp docs/.well-known/security.txt site/.well-known/security.txt
+
         test -f site/ai_support/cli_and_sdk.md
+
         cmp docs/ai_support/cli_and_sdk.md site/ai_support/cli_and_sdk.md
-        grep -q 'type="text/markdown"' site/ai_support/cli_and_sdk/index.html
+
+        grep -q ''type="text/markdown"'' site/ai_support/cli_and_sdk/index.html
+
         test -f site/developers/apis/agent-acceptance-latest.json
 
+        '
     - name: Add CNAME file
       run: echo 'docs.justlend.org' > site/CNAME
-
-    - name: Deploy
-      if: github.event_name != 'pull_request'
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        token: ${{ secrets.TOKEN}}
-        branch: gh-pages # Publish the built site to the gh-pages branch
-        folder: site # MkDocs default build output directory
+permissions:
+  contents: read
