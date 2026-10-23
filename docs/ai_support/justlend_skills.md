@@ -78,7 +78,7 @@ Markets currently **closed** to new supply/borrow (legacy, queryable but do not 
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) 20.0.0 or higher
+- [Node.js](https://nodejs.org/) 22.23.4+ (22.x), 24.22.1+ (24.x), or 26.12.1+; recommended development baseline: **24.22.1**
 - [TronGrid API key](https://www.trongrid.io/) (required)
 
 ## Installation from GitHub

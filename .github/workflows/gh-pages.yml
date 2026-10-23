@@ -20,7 +20,7 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v7
       with:
-        node-version: 20
+        node-version: '24.22.1'
 
     - name: Verify AI-readable source consistency
       run: node scripts/verify-ai-consistency.mjs

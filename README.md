@@ -14,6 +14,10 @@ This is the official developer documentation for the JustLend DAO, providing com
 
 ## 🛠️ Local Development
 
+The Node.js verification scripts use **Node.js 24.22.1**, pinned in `.nvmrc` and CI.
+With nvm installed, run `nvm install && nvm use` before the Node.js checks below.
+MkDocs itself uses Python and the dependencies in `requirements.txt`.
+
 ```bash
 python -m pip install -r requirements.txt
 mkdocs serve
