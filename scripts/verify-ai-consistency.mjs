@@ -62,13 +62,28 @@ for (const url of textFiles) {
   }
 }
 
+// Source-installed tools share this release's pinned Node baseline. Check their
+// public setup instructions too, not just the docs project's own environment.
+const recommendedNodeVersion = (await read('.nvmrc')).trim();
+const nodePrerequisite = `[Node.js](https://nodejs.org/) **${recommendedNodeVersion}** (recommended)`;
+
 const requiredSnippets = {
   'docs/index.md': ['18 active + 6 legacy = 24', 'justlend-cli', 'justlend-utils-v2'],
   'docs/getting_started/overview.md': ['18 active + 6 legacy = 24'],
   'docs/developers/contracts_overview.md': ['18 active + 6 legacy = 24', 'per market, 23 instances'],
-  'docs/ai_support/mcp_server.md': ['v1.1.3', '104 tools', '24 jToken markets in total', '| jU', '`outputSchema`', '`structuredContent`', 'get_energy_purchase_history', 'https://tegrow.ablesdxd.link', 'exact signed request'],
-  'docs/ai_support/justlend_skills.md': ['`1.1.1`', '6 structured skill modules', 'justlend-energy-purchase', '8 static shortcuts', '`structuredContent`', '`rate_limit`'],
-  'docs/ai_support/cli_and_sdk.md': ['justlend/justlend-cli', '`1.0.1`', '30 top-level command groups', 'energy purchase history <payer>', 'schemas/output-v1.schema.json', 'justlend/justlend-utils-v2', '--dry-run'],
+  'docs/ai_support/mcp_server.md': [
+    'v1.1.3', '104 tools', '24 jToken markets in total', '| jU', '`outputSchema`', '`structuredContent`', 'get_energy_purchase_history', 'https://tegrow.ablesdxd.link', 'exact signed request',
+    nodePrerequisite,
+    `The script checks the recommended Node.js version (${recommendedNodeVersion}),`,
+  ],
+  'docs/ai_support/justlend_skills.md': [
+    '`1.1.1`', '6 structured skill modules', 'justlend-energy-purchase', '8 static shortcuts', '`structuredContent`', '`rate_limit`',
+    nodePrerequisite,
+  ],
+  'docs/ai_support/cli_and_sdk.md': [
+    'justlend/justlend-cli', '`1.0.1`', '30 top-level command groups', 'energy purchase history <payer>', 'schemas/output-v1.schema.json', 'justlend/justlend-utils-v2', '--dry-run',
+    `Recommended Node.js version for the CLI and server-side SDK integrations: **${recommendedNodeVersion}**.`,
+  ],
   'docs/llms.txt': ['justlend-cli', 'v1.1.3', 'v1.1.1', 'justlend-utils-v2', '/lend/account?addresses={address}'],
   'docs/llms-full.txt': ['JustLend CLI — deterministic terminal automation', 'v1.0.1', 'v1.1.3', 'v1.1.1', 'JustLend V2 Utils'],
   'docs/documents/aidocs/source_of_truth.md': ['JustLend CLI', 'JustLend V2 Utils'],

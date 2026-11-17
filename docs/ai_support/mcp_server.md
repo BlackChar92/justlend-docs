@@ -110,7 +110,7 @@ The protocol exposes **24 jToken markets in total (18 active + 6 legacy markets)
 
 ## Prerequisites
 
-- [Node.js](https://nodejs.org/) **24.22.1** (recommended)
+- [Node.js](https://nodejs.org/) **24.22.3** (recommended)
 - Optional: [TronGrid API key](https://www.trongrid.io/) for reliable mainnet access (strongly recommended)
 
 ## Installation
@@ -130,7 +130,7 @@ bash scripts/setup-mcp-test.sh
 # Add --claude-desktop to also print Claude Desktop JSON
 ```
 
-The script checks the recommended Node.js version (24.22.1), installs dependencies, builds the project, and generates local Claude Code config.
+The script checks the recommended Node.js version (24.22.3), installs dependencies, builds the project, and generates local Claude Code config.
 
 ## Configuration
 
