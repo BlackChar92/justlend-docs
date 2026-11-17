@@ -1,7 +1,7 @@
-pygments==2.17.2
-pymdown-extensions
+pygments==2.20.0
+pymdown-extensions==13.0
 mkdocs-exclude
-mkdocs-material==9.6.8
+mkdocs-material==9.8.0
 jieba==0.42.1
 mkdocs-swagger-ui-tag
 mkdocs-redirects==1.2.2
